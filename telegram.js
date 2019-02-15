@@ -1,7 +1,8 @@
+require('dotenv').config({path:__dirname+'/.env'}); 
 const TelegramBot = require('node-telegram-bot-api');
 
 // replace the value below with the Telegram token you receive from @BotFather
-const token = '716173730:AAFGzthDnzDSPKpi4fDk4X-97Z6zKhv-n9E';
+const token = process.env.TELEGRAM_TOKEN;
 
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, {
@@ -9,26 +10,7 @@ const bot = new TelegramBot(token, {
 });
 
 const dataEndlessTower = require('./scraping')
-
-const groupBy = (list, keyGetter) => {
-    const map = new Map();
-    list.forEach((item) => {
-        const key = keyGetter(item);
-        const collection = map.get(key);
-        if (!collection) {
-            map.set(key, [item]);
-        } else {
-            collection.push(item);
-        }
-    });
-    return map;
-}
-
-const getSearch = (res, resp) => {
-    const grouped = groupBy(res, r => r.name);
-    const rs = grouped.get(resp);
-    return JSON.stringify(rs);
-}
+const searching = require('./searching')
 
 // Matches "/echo [whatever]"
 bot.onText(/\/echo (.+)/, (msg, match) => {
@@ -45,7 +27,7 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
     }
 
     data().then((result) => {
-        const arr = getSearch(result,resp)
+        const arr = searching(result,resp)
         if (arr) bot.sendMessage(chatId, arr);
         else bot.sendMessage(chatId, "No Result");
     });

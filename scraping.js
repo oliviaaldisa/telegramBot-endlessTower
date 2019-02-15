@@ -1,3 +1,4 @@
+require('dotenv').config({path:__dirname+'/.env'});
 const rp = require('request-promise');
 const $ = require('cheerio');
 
@@ -62,7 +63,7 @@ const mappingMVPChar = (endlessTowers) => {
 
   
 const scraping = async () => {
-    const url = 'https://www.roguard.net/game/endless-tower';
+    const url = process.env.URL_WEB;
     const ro = await rp(url)
         .then(function (html) {
             // MVP
